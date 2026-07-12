@@ -1,0 +1,91 @@
+# =========================
+# Environment Variables
+# =========================
+.env
+
+# =========================
+# Python
+# =========================
+venv/
+env/
+ENV/
+
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Django
+# =========================
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+
+# =========================
+# Chroma Vector Database
+# =========================
+rag/chroma_db/
+chroma_db/
+
+# =========================
+# Uploaded Documents
+# =========================
+rag/uploads/
+uploads/
+
+# =========================
+# Python Build Files
+# =========================
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# =========================
+# VS Code / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# React / Node
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+node_modules/
+dist/
+dist-ssr/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Vite
+# =========================
+*.local
+
+# =========================
+# Misc
+# =========================
+*.bak
+*.tmp
