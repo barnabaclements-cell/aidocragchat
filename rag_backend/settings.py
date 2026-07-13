@@ -19,7 +19,9 @@ load_dotenv()
 
 GROQ_API_KEY=os.getenv("GROQ_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-print("GOOGLE_API_KEY:", GOOGLE_API_KEY)
+print("GOOGLE_API_KEY:", repr(os.getenv("GOOGLE_API_KEY")))
+print("GROQ_API_KEY:", repr(os.getenv("GROQ_API_KEY")))
+print("DATABASE_URL:", repr(os.getenv("DATABASE_URL")))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
