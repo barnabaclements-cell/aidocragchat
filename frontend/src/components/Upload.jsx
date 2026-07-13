@@ -1,75 +1,58 @@
 import { useState } from "react";
 import axios from "axios";
 
-// Your deployed Django backend URL
 const API_URL = "https://aidocragchat.onrender.com/api";
 
-function Chat() {
-    const [question, setQuestion] = useState("");
-    const [messages, setMessages] = useState([]);
+function Upload() {
+    const [file, setFile] = useState(null);
+    const [message, setMessage] = useState("");
 
-    const askQuestion = async () => {
-        if (!question) return;
+    const uploadFile = async () => {
+        if (!file) {
+            alert("Select PDF");
+            return;
+        }
 
-        const userMessage = {
-            sender: "You",
-            text: question,
-        };
-
-        setMessages((prev) => [...prev, userMessage]);
+        const formData = new FormData();
+        formData.append("file", file);
 
         try {
             const res = await axios.post(
-                `${API_URL}/chat/`,
+                `${API_URL}/upload/`,
+                formData,
                 {
-                    question,
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 }
             );
 
-            const botMessage = {
-                sender: "AI",
-                text: res.data.answer,
-            };
-
-            setMessages((prev) => [...prev, botMessage]);
+            setMessage(res.data.message);
 
         } catch (err) {
-            const botMessage = {
-                sender: "AI",
-                text: "Error contacting server.",
-            };
-
-            setMessages((prev) => [...prev, botMessage]);
+            console.log("Status:", err.response?.status);
+            console.log("Data:", err.response?.data);
+            alert(JSON.stringify(err.response?.data));
         }
-
-        setQuestion("");
     };
 
     return (
         <div className="card">
-            <h2>Chat</h2>
-
-            <div className="chat-box">
-                {messages.map((msg, index) => (
-                    <div key={index} className="message">
-                        <strong>{msg.sender}:</strong>
-                        <p>{msg.text}</p>
-                    </div>
-                ))}
-            </div>
+            <h2>Upload PDF</h2>
 
             <input
-                type="text"
-                placeholder="Ask about the document..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setFile(e.target.files[0])}
             />
 
-            <button onClick={askQuestion}>
-                Send
+            <button onClick={uploadFile}>
+                Upload
             </button>
+
+            <p>{message}</p>
         </div>
     );
 }
 
-export default Chat;
+export default Upload;
