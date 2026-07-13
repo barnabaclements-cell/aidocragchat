@@ -1,13 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
 
-function Chat() {
+// Your deployed Django backend URL
+const API_URL = "https://aidocragchat.onrender.com/api";
 
+function Chat() {
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState([]);
 
     const askQuestion = async () => {
-
         if (!question) return;
 
         const userMessage = {
@@ -18,9 +19,8 @@ function Chat() {
         setMessages((prev) => [...prev, userMessage]);
 
         try {
-
             const res = await axios.post(
-                "http://127.0.0.1:8000/api/chat/",
+                `${API_URL}/chat/`,
                 {
                     question,
                 }
@@ -34,42 +34,28 @@ function Chat() {
             setMessages((prev) => [...prev, botMessage]);
 
         } catch (err) {
-
             const botMessage = {
                 sender: "AI",
                 text: "Error contacting server.",
             };
 
             setMessages((prev) => [...prev, botMessage]);
-
         }
 
         setQuestion("");
-
     };
 
     return (
-
         <div className="card">
-
             <h2>Chat</h2>
 
             <div className="chat-box">
-
-                {
-                    messages.map((msg, index) => (
-
-                        <div key={index} className="message">
-
-                            <strong>{msg.sender}:</strong>
-
-                            <p>{msg.text}</p>
-
-                        </div>
-
-                    ))
-                }
-
+                {messages.map((msg, index) => (
+                    <div key={index} className="message">
+                        <strong>{msg.sender}:</strong>
+                        <p>{msg.text}</p>
+                    </div>
+                ))}
             </div>
 
             <input
@@ -82,9 +68,7 @@ function Chat() {
             <button onClick={askQuestion}>
                 Send
             </button>
-
         </div>
-
     );
 }
 
