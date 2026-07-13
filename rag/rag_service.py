@@ -5,8 +5,8 @@ from django.conf import settings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -19,6 +19,12 @@ UPLOAD_DIR = settings.UPLOAD_DIR
 DB_DIR = settings.CHROMA_DB_DIR
 
 
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=settings.GOOGLE_API_KEY,
+)
+
+
 llm = ChatGroq(
     groq_api_key=settings.GROQ_API_KEY,
     model_name="llama-3.3-70b-versatile",
@@ -26,24 +32,10 @@ llm = ChatGroq(
 )
 
 
-def get_embedding_model():
-    """
-    Load the embedding model only when needed.
-    This avoids loading torch during Django startup.
-    """
-    return HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
-
-
 # -----------------------------
 # Upload & Index PDF
 # -----------------------------
 def process_pdf(pdf_path):
-    """
-    Load PDF, split into chunks,
-    create embeddings and save them in Chroma.
-    """
 
     loader = PyPDFLoader(pdf_path)
     documents = loader.load()
@@ -55,11 +47,9 @@ def process_pdf(pdf_path):
 
     chunks = splitter.split_documents(documents)
 
-    embedding_model = get_embedding_model()
-
     Chroma.from_documents(
         documents=chunks,
-        embedding=embedding_model,
+        embedding=embeddings,
         persist_directory=DB_DIR,
     )
 
@@ -70,18 +60,13 @@ def process_pdf(pdf_path):
 # Ask Question
 # -----------------------------
 def ask_question(question):
-    """
-    Search relevant chunks and ask Groq.
-    """
 
     if not os.path.exists(DB_DIR):
         return "Please upload a PDF first."
 
-    embedding_model = get_embedding_model()
-
     vectordb = Chroma(
         persist_directory=DB_DIR,
-        embedding_function=embedding_model,
+        embedding_function=embeddings,
     )
 
     retriever = vectordb.as_retriever(
