@@ -1,65 +1,75 @@
 import { useState } from "react";
 import axios from "axios";
 
-function Upload() {
+// Your deployed Django backend URL
+const API_URL = "https://aidocragchat.onrender.com/api";
 
-    const [file, setFile] = useState(null);
-    const [message, setMessage] = useState("");
+function Chat() {
+    const [question, setQuestion] = useState("");
+    const [messages, setMessages] = useState([]);
 
-    const uploadFile = async () => {
+    const askQuestion = async () => {
+        if (!question) return;
 
-        if (!file) {
-            alert("Select PDF");
-            return;
-        }
+        const userMessage = {
+            sender: "You",
+            text: question,
+        };
 
-        const formData = new FormData();
-
-        formData.append("file", file);
+        setMessages((prev) => [...prev, userMessage]);
 
         try {
-
             const res = await axios.post(
-                "http://127.0.0.1:8000/api/upload/",
-                formData,
+                `${API_URL}/chat/`,
                 {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
+                    question,
                 }
             );
 
-            setMessage(res.data.message);
+            const botMessage = {
+                sender: "AI",
+                text: res.data.answer,
+            };
+
+            setMessages((prev) => [...prev, botMessage]);
 
         } catch (err) {
-    console.log("Status:", err.response?.status);
-    console.log("Data:", err.response?.data);
-    alert(JSON.stringify(err.response?.data));
-}
+            const botMessage = {
+                sender: "AI",
+                text: "Error contacting server.",
+            };
 
+            setMessages((prev) => [...prev, botMessage]);
+        }
+
+        setQuestion("");
     };
 
     return (
-
         <div className="card">
+            <h2>Chat</h2>
 
-            <h2>Upload PDF</h2>
+            <div className="chat-box">
+                {messages.map((msg, index) => (
+                    <div key={index} className="message">
+                        <strong>{msg.sender}:</strong>
+                        <p>{msg.text}</p>
+                    </div>
+                ))}
+            </div>
 
             <input
-                type="file"
-                accept=".pdf"
-                onChange={(e) => setFile(e.target.files[0])}
+                type="text"
+                placeholder="Ask about the document..."
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
             />
 
-            <button onClick={uploadFile}>
-                Upload
+            <button onClick={askQuestion}>
+                Send
             </button>
-
-            <p>{message}</p>
-
         </div>
-
     );
 }
 
-export default Upload;
+export default Chat;
