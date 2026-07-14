@@ -18,4 +18,4 @@ langchain-text-splitters==1.1.2
 
 chromadb==1.5.9
 pypdf==6.14.2
-google-genai==1.30.0
+google-genai>=1.65.0,<3.0.0
