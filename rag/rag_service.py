@@ -18,9 +18,8 @@ from langchain_core.prompts import ChatPromptTemplate
 UPLOAD_DIR = settings.UPLOAD_DIR
 DB_DIR = settings.CHROMA_DB_DIR
 
-
 embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001",
+    model="gemini-embedding-001",
     google_api_key=settings.GOOGLE_API_KEY,
 )
 
